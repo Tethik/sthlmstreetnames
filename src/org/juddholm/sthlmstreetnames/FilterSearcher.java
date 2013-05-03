@@ -2,12 +2,9 @@ package org.juddholm.sthlmstreetnames;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-
-import javax.management.RuntimeErrorException;
 
 import com.skjegstad.utils.BloomFilter;
 
@@ -19,12 +16,19 @@ public class FilterSearcher {
 	
 	private BloomFilter<String> filter;
 
+	@SuppressWarnings("unchecked")
 	public FilterSearcher(String filename) throws IOException {
 		ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename));
 		try {
-			filter = (BloomFilter<String>) in.readObject();
-		} catch (ClassNotFoundException e) {					
+			Object obj = in.readObject();
+			if(!(obj instanceof BloomFilter))
+				throw new RuntimeException("Serialized object was not a bloom filter!");
+				
+			filter = (BloomFilter<String>) obj;
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);			
+		} finally {
+			in.close();
 		}
 	}
 	
