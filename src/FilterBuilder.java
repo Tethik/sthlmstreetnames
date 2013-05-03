@@ -1,18 +1,16 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
-
-import com.skjegstad.utils.BloomFilter;
-
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.skjegstad.utils.BloomFilter;
 
 
 /**
@@ -24,7 +22,6 @@ public class FilterBuilder {
 	private BloomFilter<String> filter;
 	private double falsePositive;
 	private File osmfile;
-	private static String tmpFile = ".tmpfilterbuildfile";
 	private ArrayList<String> matches = new ArrayList<String>();
 	
 	public FilterBuilder(String filename, double falsePositive)
@@ -121,7 +118,6 @@ public class FilterBuilder {
 		try {
 			outputfile.createNewFile();			
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			
 			System.err.println("Could not create output file. I will quit before wasting your time.");
@@ -132,9 +128,10 @@ public class FilterBuilder {
 		try {
 			builder.parse();
 			builder.test();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {			
 			e.printStackTrace();
+			System.err.println("IO Error while parsing osm file :(");
+			return;
 		}
 		
 		System.out.println("Writing to file");
